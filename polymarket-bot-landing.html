@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PolyEdge Engine — Polymarket Bot Execution System</title>
+  <meta name="description" content="A battle-tested Polymarket execution engine for builders, researchers, and systematic traders. No promises. No magic edge. Just faster experimentation." />
+  <style>
+    :root {
+      --bg: #071017;
+      --bg2: #0b1720;
+      --card: rgba(255,255,255,.065);
+      --card2: rgba(255,255,255,.095);
+      --text: #f5f7fb;
+      --muted: #a8b3c5;
+      --line: rgba(255,255,255,.13);
+      --accent: #73f0b4;
+      --accent2: #7db4ff;
+      --danger: #ffcf70;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
+      --radius: 24px;
+      --max: 1160px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% -10%, rgba(115,240,180,.22), transparent 34%),
+        radial-gradient(circle at 90% 5%, rgba(125,180,255,.24), transparent 38%),
+        linear-gradient(180deg, var(--bg), #04070b 72%);
+      line-height: 1.5;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { max-width: var(--max); margin: 0 auto; padding: 0 22px; }
+    .nav {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(18px);
+      background: rgba(7,16,23,.72);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      max-width: var(--max); margin: 0 auto; padding: 15px 22px;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -.02em; }
+    .mark {
+      width: 34px; height: 34px; border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 28px rgba(115,240,180,.28);
+    }
+    .nav-links { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 14px; }
+    .nav-links a:hover { color: var(--text); }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      min-height: 46px; padding: 0 18px; border-radius: 999px;
+      font-weight: 750; border: 1px solid transparent;
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      cursor: pointer;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #061017; }
+    .btn-secondary { border-color: var(--line); background: rgba(255,255,255,.055); color: var(--text); }
+    .hero { padding: 86px 0 58px; }
+    .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; gap: 42px; align-items: center; }
+    .pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: #dffdea; border: 1px solid rgba(115,240,180,.28);
+      background: rgba(115,240,180,.08); padding: 8px 12px; border-radius: 999px;
+      font-size: 14px; margin-bottom: 18px;
+    }
+    h1 { font-size: clamp(42px, 7vw, 76px); line-height: .94; letter-spacing: -.07em; margin: 0 0 22px; }
+    .lead { font-size: clamp(18px, 2vw, 22px); color: var(--muted); max-width: 650px; margin: 0 0 28px; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    .small-note { color: var(--muted); font-size: 13px; max-width: 620px; }
+    .terminal {
+      background: rgba(2,8,12,.76); border: 1px solid var(--line); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .terminal-top { display: flex; gap: 7px; padding: 14px 16px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.04); }
+    .dot { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.28); }
+    pre { margin: 0; padding: 20px; overflow: auto; color: #d7ffe8; font-size: 13px; line-height: 1.65; }
+    .muted { color: var(--muted); }
+    section { padding: 72px 0; }
+    .section-head { max-width: 760px; margin-bottom: 28px; }
+    h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1; letter-spacing: -.05em; margin: 0 0 14px; }
+    .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 24px; box-shadow: 0 10px 40px rgba(0,0,0,.15);
+    }
+    .card h3 { margin: 0 0 9px; font-size: 20px; letter-spacing: -.02em; }
+    .card p, .card li { color: var(--muted); }
+    .card p { margin: 0; }
+    .icon {
+      width: 42px; height: 42px; border-radius: 14px;
+      display: grid; place-items: center; margin-bottom: 14px;
+      background: rgba(115,240,180,.1); border: 1px solid rgba(115,240,180,.22);
+      color: var(--accent); font-weight: 900;
+    }
+    ul { margin: 14px 0 0; padding-left: 18px; }
+    li { margin: 8px 0; }
+    .split { display: grid; grid-template-columns: .92fr 1.08fr; gap: 22px; align-items: start; }
+    .warning {
+      background: rgba(255,207,112,.08); border-color: rgba(255,207,112,.28);
+    }
+    .warning strong { color: var(--danger); }
+    .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
+    .price-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+    .price-card.featured { background: linear-gradient(180deg, rgba(115,240,180,.12), rgba(255,255,255,.065)); border-color: rgba(115,240,180,.35); box-shadow: var(--shadow); }
+    .tag { display: inline-block; color: #061017; background: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; margin-bottom: 14px; }
+    .price { font-size: 42px; font-weight: 900; letter-spacing: -.05em; margin: 8px 0 4px; }
+    .price span { font-size: 15px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+    .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; margin: 10px 0; }
+    .faq summary { cursor: pointer; font-weight: 800; }
+    .faq p { color: var(--muted); margin: 12px 0 0; }
+    .cta-box {
+      text-align: center; background: linear-gradient(135deg, rgba(115,240,180,.16), rgba(125,180,255,.13));
+      border: 1px solid var(--line); border-radius: 32px; padding: 44px 22px; box-shadow: var(--shadow);
+    }
+    .cta-box p { color: var(--muted); max-width: 680px; margin: 0 auto 22px; font-size: 18px; }
+    footer { border-top: 1px solid var(--line); padding: 28px 0; color: var(--muted); font-size: 13px; }
+    @media (max-width: 880px) {
+      .hero-grid, .split, .grid-3, .grid-2, .pricing { grid-template-columns: 1fr; }
+      .nav-links a:not(.btn) { display: none; }
+      .hero { padding-top: 58px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="#top"><span class="mark"></span><span>PolyEdge Engine</span></a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#proof">What you get</a>
+        <a href="#pricing">Pricing</a>
+        <a class="btn btn-primary" href="mailto:hello@example.com?subject=PolyEdge%20Engine%20access">Request access</a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="pill">Built for systematic Polymarket experimentation</div>
+          <h1>Stop clicking. Start testing markets like an operator.</h1>
+          <p class="lead">PolyEdge Engine is a Polymarket execution and discovery system for builders, researchers, and traders who want to run structured experiments instead of manually chasing prediction markets.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="mailto:hello@example.com?subject=I%20want%20PolyEdge%20Engine">Request access</a>
+            <a class="btn btn-secondary" href="#proof">See what is included</a>
+          </div>
+          <p class="small-note">No guaranteed profits. No claimed edge. No financial advice. This is infrastructure for people who understand risk and want a faster way to test their own ideas.</p>
+        </div>
+        <div class="terminal" aria-label="Bot terminal preview">
+          <div class="terminal-top"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+<pre>[DISCOVERY] BTC 15m market found
+[BOOK] orderbook connected: YES / NO
+[SIGNAL] late-window probability edge detected
+[RISK] max size, spread, stop-loss, cooldown checks passed
+[DRY-RUN] would buy YES @ 0.81 size=5.00
+[EXIT] TP/SL/resolution monitor active
+[SUMMARY] trades=3 | pnl=+0.42 | skipped=18 | reason logs saved</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="problem">
+      <div class="wrap split">
+        <div class="section-head">
+          <h2>Manual trading is not a strategy.</h2>
+          <p>Prediction markets move fast, especially near expiry. The biggest bottleneck is not just execution speed — it is repeatability.</p>
+        </div>
+        <div class="grid-2">
+          <div class="card"><h3>Clicking does not scale</h3><p>By the time you find the market, check the book, size the trade, and decide, the setup may already be gone.</p></div>
+          <div class="card"><h3>Memory is biased</h3><p>You remember the exciting wins and painful losses. The bot logs every skipped trade, every gate, and every reason.</p></div>
+          <div class="card"><h3>Markets roll constantly</h3><p>Crypto, weather, sports, and finance markets require discovery, rollover, and fresh state handling.</p></div>
+          <div class="card"><h3>Risk needs rails</h3><p>Position sizing, stop-loss behavior, cooldowns, spread limits, and late-window guards should not depend on emotion.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>An execution engine, not a magic money button.</h2>
+          <p>PolyEdge Engine gives you the plumbing to discover, monitor, simulate, and execute market strategies with guardrails.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card"><div class="icon">01</div><h3>Market discovery</h3><p>Find active markets, track rollover, and keep the bot attached to the current contract instead of stale markets.</p></div>
+          <div class="card"><div class="icon">02</div><h3>Orderbook monitoring</h3><p>Watch live books, spreads, asks, bids, and tradeable windows with structured logging.</p></div>
+          <div class="card"><div class="icon">03</div><h3>Config-driven strategy</h3><p>Adjust thresholds in YAML without rewriting the execution core every time you want to test a new idea.</p></div>
+          <div class="card"><div class="icon">04</div><h3>Dry-run first</h3><p>Run simulated execution before going live so you can see what the bot would have done.</p></div>
+          <div class="card"><div class="icon">05</div><h3>Risk guardrails</h3><p>Size caps, spread filters, late guards, cooldowns, stop-loss logic, and post-trade monitoring.</p></div>
+          <div class="card"><div class="icon">06</div><h3>Experiment logs</h3><p>Produce summaries and logs that help answer the only question that matters: what should we change next?</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="proof">
+      <div class="wrap split">
+        <div class="card warning">
+          <h2>Important: this is not sold as a profitable strategy.</h2>
+          <p><strong>There is no guarantee of profit.</strong> Prediction markets are risky. You can lose money. The product is sold as a technical execution and research engine — not as financial advice, not as a signal service, and not as a promise of positive expected value.</p>
+        </div>
+        <div class="card">
+          <h3>What you get</h3>
+          <ul>
+            <li>Python bot source code for Polymarket market monitoring and execution</li>
+            <li>YAML configuration templates</li>
+            <li>Dry-run and live-mode structure</li>
+            <li>Logging and run-summary outputs</li>
+            <li>Example strategy modules for late-window testing</li>
+            <li>Setup instructions for macOS terminal usage</li>
+            <li>Optional onboarding call for configuration and risk setup</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="audience">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Built for the right kind of buyer.</h2>
+          <p>This is for people who want infrastructure and accept responsibility for their own strategy decisions.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card"><h3>Systematic traders</h3><p>You already have hypotheses and need a repeatable way to test them in live markets.</p></div>
+          <div class="card"><h3>Prediction-market builders</h3><p>You want a starting point for bots, dashboards, scanners, or research workflows.</p></div>
+          <div class="card"><h3>Technical researchers</h3><p>You care about logs, experiments, market microstructure, and fast iteration.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Simple access options.</h2>
+          <p>Start with the execution engine. Add support only when you need it.</p>
+        </div>
+        <div class="pricing">
+          <div class="price-card">
+            <h3>Starter</h3>
+            <p class="muted">For technical users who can self-install.</p>
+            <div class="price">€149</div>
+            <ul>
+              <li>Source code package</li>
+              <li>Example config files</li>
+              <li>Basic setup guide</li>
+              <li>No private support</li>
+            </ul>
+            <p style="margin-top:22px"><a class="btn btn-secondary" href="mailto:hello@example.com?subject=PolyEdge%20Starter">Request Starter</a></p>
+          </div>
+          <div class="price-card featured">
+            <span class="tag">Recommended</span>
+            <h3>Operator</h3>
+            <p class="muted">For buyers who want help getting to first run.</p>
+            <div class="price">€399</div>
+            <ul>
+              <li>Everything in Starter</li>
+              <li>Onboarding checklist</li>
+              <li>One setup / config call</li>
+              <li>Run-log review for first experiment</li>
+            </ul>
+            <p style="margin-top:22px"><a class="btn btn-primary" href="mailto:hello@example.com?subject=PolyEdge%20Operator">Request Operator</a></p>
+          </div>
+          <div class="price-card">
+            <h3>Custom</h3>
+            <p class="muted">For teams, researchers, or custom markets.</p>
+            <div class="price">€1k+ <span>/ project</span></div>
+            <ul>
+              <li>Custom market adaptation</li>
+              <li>Research workflow support</li>
+              <li>Dashboard / deployment help</li>
+              <li>Private implementation scope</li>
+            </ul>
+            <p style="margin-top:22px"><a class="btn btn-secondary" href="mailto:hello@example.com?subject=PolyEdge%20Custom">Discuss Custom</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>FAQ</h2>
+        </div>
+        <details open><summary>Does this bot make money?</summary><p>No promise is made. The bot is an execution and research tool. Whether a strategy is profitable depends on your market selection, configuration, risk management, fees, liquidity, and live conditions.</p></details>
+        <details><summary>Is this financial advice?</summary><p>No. This product is not financial advice, not investment advice, and not a recommendation to trade any market.</p></details>
+        <details><summary>Can I run it in dry-run mode?</summary><p>Yes. The intended workflow is to run dry-run first, inspect logs, adjust configuration, and only then consider live mode.</p></details>
+        <details><summary>Which markets can it support?</summary><p>The engine is designed around Polymarket-style binary/event markets. Example directions include crypto, finance, weather, and sports, depending on market availability and configuration.</p></details>
+        <details><summary>Do I need to be technical?</summary><p>Yes, at least for the Starter plan. Operator is better if you want help with setup, configuration, and first-run review.</p></details>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="wrap">
+        <div class="cta-box">
+          <h2>Want the engine?</h2>
+          <p>Tell me what market type you want to test, whether you want dry-run only or live execution, and how technical you are. I’ll recommend the right access option.</p>
+          <a class="btn btn-primary" href="mailto:hello@example.com?subject=PolyEdge%20Engine%20access&body=I%20want%20access%20to%20PolyEdge%20Engine.%0A%0AMarket%20type%3A%0ADry-run%20or%20live%3A%0ATechnical%20level%3A%0AQuestions%3A">Request access</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">© 2026 PolyEdge Engine. Independent tool. Not affiliated with Polymarket. Trading prediction markets involves risk and can result in loss.</div>
+  </footer>
+</body>
+</html>
