@@ -15,3 +15,7 @@ Cloudflare Pages settings:
 
 Important:
 - This is not legal advice. Have the policy and terms reviewed for your jurisdiction and exact sales/payment flow.
+
+
+## KCY access test
+All commercial CTA buttons route to `kcy.html`. The test requires 8/10 exact answers and allows unlimited retries. Qualified leads submit through FormSubmit to `trading@binarybots.online`. The first submission triggers a FormSubmit activation email; approve it before promotion.
