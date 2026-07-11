@@ -110,7 +110,9 @@
     .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: stretch; }
     .price-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
     .price-card.featured { background: linear-gradient(180deg, rgba(115,240,180,.12), rgba(255,255,255,.065)); border-color: rgba(115,240,180,.35); box-shadow: var(--shadow); }
+    .price-card.unavailable { opacity: .82; }
     .tag { display: inline-block; color: #061017; background: var(--accent); border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 800; margin-bottom: 14px; }
+    .tag-muted { color: #061017; background: var(--danger); }
     .price { font-size: 42px; font-weight: 900; letter-spacing: -.05em; margin: 8px 0 4px; }
     .price span { font-size: 15px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
     .faq details { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 18px 20px; margin: 10px 0; }
@@ -254,10 +256,11 @@
       <div class="wrap">
         <div class="section-head">
           <h2>Priced for serious operators.</h2>
-          <p>This is not a weekend template. You are buying months of painful market-discovery, execution, logging, approval, settlement, and risk-control work compressed into a starting point you can actually build on.</p>
+          <p>This is not a weekend template. You are buying months of painful market-discovery, execution, logging, approval, settlement, and risk-control work compressed into a starting point you can actually build on. Starter and Custom are temporarily waitlisted; Operator is the current active package.</p>
         </div>
         <div class="pricing">
-          <div class="price-card">
+          <div class="price-card unavailable">
+            <span class="tag tag-muted">Temporarily unavailable due to heavy demand</span>
             <h3>Starter</h3>
             <p class="muted">For technical users who can self-install and self-debug.</p>
             <div class="price">$849</div>
@@ -268,7 +271,7 @@
               <li>Dry-run workflow</li>
               <li>No private implementation support</li>
             </ul>
-            <p style="margin-top:22px"><a class="btn btn-secondary" href="kcy.html?tier=starter">Request Starter</a></p>
+            <p style="margin-top:22px"><a class="btn btn-secondary" href="kcy.html?tier=starter&status=waitlist">Join Starter waitlist</a></p>
           </div>
           <div class="price-card featured">
             <span class="tag">Recommended</span>
@@ -284,7 +287,8 @@
             </ul>
             <p style="margin-top:22px"><a class="btn btn-primary" href="kcy.html?tier=operator">Request Operator</a></p>
           </div>
-          <div class="price-card">
+          <div class="price-card unavailable">
+            <span class="tag tag-muted">Temporarily unavailable due to heavy demand</span>
             <h3>Custom</h3>
             <p class="muted">For teams, researchers, or market-specific builds.</p>
             <div class="price">$3k+ <span>/ project</span></div>
@@ -295,7 +299,7 @@
               <li>Private implementation scope</li>
               <li>Quoted after technical review</li>
             </ul>
-            <p style="margin-top:22px"><a class="btn btn-secondary" href="kcy.html?tier=custom">Discuss Custom</a></p>
+            <p style="margin-top:22px"><a class="btn btn-secondary" href="kcy.html?tier=custom&status=waitlist">Join Custom waitlist</a></p>
           </div>
         </div>
       </div>
